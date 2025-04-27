@@ -1,93 +1,90 @@
-(function () {
-    var preTag = document.getElementById('donut');
+(function () { // Создает самовызывающуюся функцию для изоляции переменных
+    var preTag = document.getElementById('donut'); // Получает элемент <pre> с идентификатором 'donut'
 
-    // Angles, Radius and Contants
-    var A = 1;
-    var B = 1;
-    var R1 = 1;
-    var R2 = 2;
-    var K1 = 150;
-    var K2 = 5;
+    // Углы, радиусы и константы
+    var A = 1; // Начальный угол A
+    var B = 1; // Начальный угол B
+    var R1 = 1; // Радиус 1 (не используется в коде)
+    var R2 = 2; // Радиус 2 (не используется в коде)
+    var K1 = 150; // Константа K1 (не используется в коде)
+    var K2 = 5; // Константа K2 (не используется в коде)
 
-    // Function to render ASCII frame
+    // Функция для отрисовки ASCII-кадра
     function renderAsciiFrame() {
-        var b = []; // Array to stay acii chars
-        var z = []; // Array to store depth values
+        var b = []; // Массив для хранения ASCII-символов
+        var z = []; // Массив для хранения значений глубины
 
-        var width = 280; // Width of frame
-        var height = 160; // Height of frame
+        var width = 280; // Ширина кадра
+        var height = 160; // Высота кадра
 
-        A += 0.07; // Increament angle a
-        B += 0.03; // Increament angle b
-        // Sin and Cosine of angles
-        var cA = Math.cos(A),
-            sA = Math.sin(A),
-            cB = Math.cos(B),
-            sB = Math.sin(B);
+        A += 0.07; // Увеличивает угол A
+        B += 0.03; // Увеличивает угол B
+        // Синус и косинус углов
+        var cA = Math.cos(A), // Косинус угла A
+            sA = Math.sin(A), // Синус угла A
+            cB = Math.cos(B), // Косинус угла B
+            sB = Math.sin(B); // Синус угла B
 
-        // Initialize arrays with default angles
+        // Инициализация массивов с начальными значениями
         for (var k = 0; k < width * height; k++) {
-            // Set default ascii char
-            b[k] = k % width == width - 1 ? '\n' : ' ';
-            // Set default depth
-            z[k] = 0;
+            // Устанавливает начальный ASCII-символ
+            b[k] = k % width == width - 1 ? '\n' : ' '; // Заполняет массив пробелами и переводами строк
+            // Устанавливает начальную глубину
+            z[k] = 0; // Заполняет массив глубины нулями
         }
 
-        // Generate the ascii frame
-        for (var j = 0; j < 6.28; j += 0.07) {
-            var ct = Math.cos(j); // Cosine of j
-            var st = Math.sin(j); // Sin of j
+        // Генерация ASCII-кадра
+        for (var j = 0; j < 6.28; j += 0.07) { // Цикл по углу j
+            var ct = Math.cos(j); // Косинус j
+            var st = Math.sin(j); // Синус j
 
-            for (var i = 0; i < 6.28; i += 0.02) {
-                var sp = Math.sin(i); // Sin of i
-                cp = Math.cos(i), // Cosine of i
-                    h = ct + 2, // Height calculation
-                    // Distance calculation
-                    D = 1 / (sp * h * sA + st * cA + 5),
-                    // Temporary variable
-                    t = sp * h * cA - st * sA;
+            for (var i = 0; i < 6.28; i += 0.02) { // Цикл по углу i
+                var sp = Math.sin(i); // Синус i
+                cp = Math.cos(i); // Косинус i
+                var h = ct + 2; // Вычисление высоты
+                // Вычисление расстояния
+                D = 1 / (sp * h * sA + st * cA + 5); // Расчет глубины
+                // Временная переменная
+                var t = sp * h * cA - st * sA; // Вычисление временной переменной
 
-                // Calculate cordinates of ascii char
-                var x = Math.floor(width / 2 + (width / 4) * D * (cp * h * cB - t * sB));
-                var y = Math.floor(height / 2 + (height / 4) * D * (cp * h * sB + t * cB));
+                // Вычисление координат ASCII-символа
+                var x = Math.floor(width / 2 + (width / 4) * D * (cp * h * cB - t * sB)); // Вычисление координаты x
+                var y = Math.floor(height / 2 + (height / 4) * D * (cp * h * sB + t * cB)); // Вычисление координаты y
 
-                // Calculate the index in the array
-                var o = x + width * y;
-                // Calculate the ascii char index
-                var N = Math.floor(8 * ((st * sA - sp * ct * cA) * cB - sp * ct * sA - st * cA - cp * ct * sB));
+                // Вычисление индекса в массиве
+                var o = x + width * y; // Индекс в массиве b
+                // Вычисление индекса ASCII-символа
+                var N = Math.floor(8 * ((st * sA - sp * ct * cA) * cB - sp * ct * sA - st * cA - cp * ct * sB)); // Индекс символа
 
-                // Update ascii char and depth if conditions are met
+                // Обновление ASCII-символа и глубины, если условия выполнены
                 if (y < height && y >= 0 && x >= 0 && x < width && D > z[o]) {
-                    z[o] = D;
-                    // Update ascii char based on the index
-                    b[o] = '.,-~:;=!*#$@'[N > 0 ? N : 0];
+                    z[o] = D; // Обновляет значение глубины
+                    // Обновляет ASCII-символ в зависимости от индекса
+                    b[o] = '.,-~:;=!*#$@'[N > 0 ? N : 0]; // Устанавливает символ в массиве b
                 }
-
             }
-
         }
 
-        // Update html element with the ascii frame
-        preTag.innerHTML = b.join('');
-
+        // Обновляет HTML-элемент с ASCII-кадром
+        preTag.innerHTML = b.join(''); // Объединяет массив b в строку и обновляет содержимое элемента <pre>
     }
 
-    // Function to start the animation
+    // Функция для запуска анимации ASCII
     function startAsciiAnimation() {
-        // Start it by calling renderAsciiAnimation every 50ms
-        window.asciiIntervalId = setInterval(renderAsciiFrame, 50);
+        // Запускает анимацию, вызывая renderAsciiFrame каждые 50 мс
+        window.asciiIntervalId = setInterval(renderAsciiFrame, 50); // Устанавливает интервал для обновления кадра
     }
 
-    renderAsciiFrame(); // Render the initial ascii frame
-    // Add event listener to start animation when page is loaded
+    renderAsciiFrame(); // Отрисовывает начальный ASCII-кадр
+    // Добавляет обработчик событий для запуска анимации при загрузке страницы
     if (document.all) {
-        // For older versions of internet explorer
-        window.attachEvent('onload', startAsciiAnimation);
+        // Для старых версий Internet Explorer
+        window.attachEvent('onload', startAsciiAnimation); // Использует attachEvent для IE
     } else {
-        // For modern browsers
-        window.addEventListener('load', startAsciiAnimation, false);
+        // Для современных браузеров
+        window.addEventListener('load', startAsciiAnimation, false); // Использует addEventListener для других браузеров
     }
 
-    // Add event listener to update ascii frame when window resized
-    window.addEventListener('resize', renderAsciiFrame);
+    // Добавляет обработчик событий для обновления ASCII-кадра при изменении размера окна
+    window.addEventListener('resize', renderAsciiFrame); // Перерисовывает кадр при изменении размера окна
 })();
